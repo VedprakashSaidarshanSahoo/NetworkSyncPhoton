@@ -39,7 +39,7 @@ public class Player : MonoBehaviourPunCallbacks
     {
         // Disable cameras of other players
         DisableCameras();
-        photonView.RPC("PlayerName", RpcTarget.All);
+        PlayerUpdate();
     }
 
     private void Update()
@@ -100,6 +100,11 @@ public class Player : MonoBehaviourPunCallbacks
                 _pl.transform.GetChild(0).gameObject.SetActive(false);
             }
         }
+    }
+
+    public void PlayerUpdate()
+    {
+        photonView.RPC("PlayerName", RpcTarget.All);
     }
 
     [PunRPC]

@@ -1,5 +1,7 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -61,7 +63,12 @@ public class GameManager : MonoBehaviour
             NetworkCallbacks.DebugFont(FontStyle.italic));
 
         PhotonNetwork.Instantiate(m_Player_Prefab.name, m_Player_Instantiate_LOC[PhotonNetwork.LocalPlayer.ActorNumber - 1].position, Quaternion.identity);
-        PhotonNetwork.NickName = "Darshan";
+    }
+
+    public void ChangeNickName(TMP_InputField m_NickName)
+    {
+        PhotonNetwork.NickName = m_NickName.text;
+        GetCurrentPlayer().GetComponent<Player>().PlayerUpdate();
     }
 
     private void DisableCameras(Photon.Realtime.Player _Player)
