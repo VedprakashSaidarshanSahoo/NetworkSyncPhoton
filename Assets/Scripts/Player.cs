@@ -1,20 +1,19 @@
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class Player : MonoBehaviourPunCallbacks
 {
-    [SerializeField] Rigidbody m_CharacterController;
-    [SerializeField] float m_Speed;
-    [SerializeField] int m_Score = 0;
-    [SerializeField] int m_HighScore = 0;
-    [SerializeField] GameObject m_WeaponPrefab;
-    [SerializeField] Transform m_WeaponSpawnPoint;
-    [SerializeField] float m_WeaponSpawnDelay = 5f;
-    [SerializeField] TMP_Text m_PlayerName;
+    [SerializeField] private Rigidbody m_CharacterController;
+    [SerializeField] private float m_Speed;
+    [SerializeField] private int m_Score = 0;
+    [SerializeField] private int m_HighScore = 0;
+    [SerializeField] private GameObject m_WeaponPrefab;
+    [SerializeField] private Transform m_WeaponSpawnPoint;
+    [SerializeField] private float m_WeaponSpawnDelay = 5f;
+    [SerializeField] private TMP_Text m_PlayerName;
 
     private PhotonView photonView;
     private Camera m_PlayerCamera;
@@ -39,7 +38,10 @@ public class Player : MonoBehaviourPunCallbacks
     {
         // Disable cameras of other players
         DisableCameras();
-        PlayerUpdate();
+        if (photonView.IsMine)
+        {
+            photonView.RPC("UpdatePlayerName", RpcTarget.AllBuffered, PhotonNetwork.NickName);
+        }
     }
 
     private void Update()
@@ -104,13 +106,16 @@ public class Player : MonoBehaviourPunCallbacks
 
     public void PlayerUpdate()
     {
-        photonView.RPC("PlayerName", RpcTarget.All);
+        photonView.RPC("UpdatePlayerName", RpcTarget.AllBuffered, PhotonNetwork.NickName);
     }
 
     [PunRPC]
-    private void PlayerName()
+    private void UpdatePlayerName(string playerName)
     {
-        m_PlayerName.text = PhotonNetwork.NickName;
+        if (m_PlayerName != null)
+        {
+            m_PlayerName.text = playerName;
+        }
     }
 
     public void TakeDamage(float damage)
